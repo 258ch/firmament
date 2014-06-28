@@ -1,0 +1,8 @@
+---
+name: Firmament
+version: 1
+
+cron:
+- description: Task
+  url: cron.php
+  schedule: */1 * * * *

@@ -1,0 +1,30 @@
+﻿h1, h2, h3, div
+{
+  font-family: "微软雅黑";
+}
+
+#maindir
+{
+  margin-top: 10px;
+}
+
+#banner
+{
+  border: 1px solid #CCC;
+}
+
+#form
+{
+  max-width: 440px;
+}
+
+.col-md-1,
+.col-md-2,
+.col-md-3,
+.col-md-4,
+.col-md-5,
+.col-md-6
+{
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
