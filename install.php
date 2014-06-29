@@ -16,8 +16,9 @@
 "CREATE TABLE user
 (
   uid integer AUTO_INCREMENT PRIMARY KEY,
-  umail varchar(64) UNIQUE NOT NULL,
-  upwd varchar(32) NOT NULL
+  uname varchar(16) UNIQUE NOT NULL,
+  upwd varchar(32) NOT NULL,
+  umail varchar(64) UNIQUE NOT NULL
 )",
 
 "CREATE TABLE tbid
