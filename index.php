@@ -51,7 +51,7 @@
 	  include "./page/login_page.php";
 	  return;
 	}
-	if(preg_match('/^[0-9a-zA-Z_\x80-\xff]{1,14}$/', $un) == 0)
+	if(preg_match('/^[\w\x{4e00}-\x{9fa5}]{1,14}$/u', $un) == 0)
 	{
 	  ShowMsg("用户名格式错误！", "./index.php?action=login");
 	  return;
@@ -63,7 +63,7 @@
 	  ShowMsg("请输入密码！", "./index.php?action=login");
 	  return;
 	}
-	if(preg_match('/^[\x20-\x7e]{6,14}$/', $pw) == 0)
+	if(preg_match('/^[\x20-\x7e]{6,16}$/', $pw) == 0)
 	{
 	  ShowMsg("密码格式错误！", "./index.php?action=login");
 	  return;
@@ -78,7 +78,7 @@
 	  return;
 	}
 	
-	$sql = "SELECT * FROM user WHERE uname=? AND upwd=?";
+    /*$sql = "SELECT * FROM user WHERE uname=? AND upwd=?";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("ss", $un, $pw);
 	if(!$stmt->execute())
@@ -86,7 +86,15 @@
 	  ShowMsg("数据库错误：" . $stmt->error, "./index.php?action=login");
 	  return;
 	}
-	$res = $stmt->get_result();
+    $res = $stmt->get_result();*/
+    $sql = sprintf("SELECT * FROM user WHERE uname='%s' AND upwd='%s'",
+                   $un, $conn->escape_string($pw));
+    $res = $conn->query($sql);
+    if(!$res)
+    {
+      ShowMsg("数据库错误：" . $conn->error, "./index.php?action=login");
+	  return;  
+    }
 	if($res->num_rows == 0)
 	{
 	  ShowMsg("用户不存在或密码错误！", "./index.php?action=login");
@@ -159,7 +167,7 @@
 	  include "./page/reg_page.php";
 	  return;
 	}
-	if(preg_match('/^[0-9a-zA-Z_\x80-\xff]{1,14}$/', $un) == 0)
+	if(preg_match('/^[\w\x{4e00}-\x{9fa5}]{1,14}$/u', $un) == 0)
 	{
 	  ShowMsg("用户名格式错误！", "./index.php?action=reg");
 	  return;
@@ -171,7 +179,7 @@
 	  ShowMsg("请输入密码！", "./index.php?action=reg");
 	  return;
 	}
-	if(preg_match('/^[\x20-\x7e]{6,14}$/', $pw) == 0)
+	if(preg_match('/^[\x20-\x7e]{6,16}$/', $pw) == 0)
 	{
 	  ShowMsg("密码格式错误！", "./index.php?action=login");
 	  return;
