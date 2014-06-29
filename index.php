@@ -126,7 +126,8 @@
 	  $allow = true;
 	else
 	{
-	  $allow = $res->fetch_array()[0];
+      $row = $res->fetch_array();
+	  $allow = $row[0];
 	  $allow = ($allow == "true");
 	}
 	if(!$allow)
@@ -146,7 +147,10 @@
 	if($res->num_rows == 0)
 	  $key = "";
 	else
-	  $key = $res->fetch_array()[0];
+    {
+      $row = $res->fetch_array();
+	  $key = $row[0];
+    }
 	
 	$un = $_GET["un"];
 	if($un == "")

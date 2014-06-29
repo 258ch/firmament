@@ -2,9 +2,10 @@
   error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
   date_default_timezone_set('PRC');
 
-  require_once "./lib/TBOps_Sign.php";
-  require_once "./lib/WizardHTTP.php";
-  require_once "./lib/common.php";
+  require_once './lib/TBOps_Sign.php';
+  require_once './lib/WizardHTTP.php';
+  require_once './lib/common.php';
+  
   
   include "./config.php";
   $conn = new mysqli($db_server, $db_username, $db_password, $db_name, $db_port);
@@ -34,7 +35,8 @@
   else
   {
     $ls_exist = true;
-    $lastsign = (int)$res->fetch_row()[0];
+    $row = (int)$res->fetch_row();
+    $lastsign = $row[0];
   }
 
   $dt = (int)Date('Ymd');

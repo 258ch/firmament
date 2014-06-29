@@ -534,7 +534,8 @@ function do_setbind($usr)
     echo app_error(9, "被绑定用户不存在");
 	return;
   }
-  $tar_uid = $res->fetch_array()[0];
+  $row = $res->fetch_array();
+  $tar_uid = $row[0];
   
   $sql = "INSERT INTO bind VALUES (?,?)";
   $stmt = $conn->prepare($sql);
@@ -579,7 +580,8 @@ function do_rmbind($usr)
     echo app_error(9, "被绑定用户不存在");
 	return;
   }
-  $tar_uid = $res->fetch_array()[0];
+  $row = $res->fetch_array();
+  $tar_uid = $row[0];
   
   $sql = "DELETE FROM bind WHERE (uid1=? AND uid2=?) OR (uid1=? AND uid2=?)";
   $stmt = $conn->prepare($sql);
@@ -726,7 +728,8 @@ function do_getregset($usr)
     $allow = true;
   else
   {
-    $allow = $res->fetch_array()[0];
+    $row = $res->fetch_array();
+    $allow = $row[0];
 	$allow = ($allow == "true");
   }
   
@@ -740,7 +743,10 @@ function do_getregset($usr)
   if($res->num_rows == 0)
     $key = "";
   else
-    $key = $res->fetch_array()[0];
+  {
+    $row = $res->fetch_array();
+    $key = $row[0];
+  }
 
   echo json_encode(array('errno' => 0, 'allow' => $allow, 'key' => $key));
 }
