@@ -561,7 +561,7 @@ function do_setbind($usr)
 function do_rmbind($usr)
 {
   $bdname = $_GET['bdname'];
-  if(preg('/^[\w\x{4e00}-\x{9fa5}]{1,14}$/u', $bdname) == 0)
+  if(preg_match('/^[\w\x{4e00}-\x{9fa5}]{1,14}$/u', $bdname) == 0)
   {
     echo app_error(8, '目标账号格式错误');
 	return;
