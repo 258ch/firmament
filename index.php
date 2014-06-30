@@ -58,11 +58,6 @@
 	}
 	
 	$pw = $_GET["pw"];
-	if($pw == "")
-	{
-	  ShowMsg("请输入密码！", "./index.php?action=login");
-	  return;
-	}
 	if(preg_match('/^[\x20-\x7e]{6,16}$/', $pw) == 0)
 	{
 	  ShowMsg("密码格式错误！", "./index.php?action=login");
@@ -78,7 +73,7 @@
 	  return;
 	}
 	
-    /*$sql = "SELECT * FROM user WHERE uname=? AND upwd=?";
+    $sql = "SELECT * FROM user WHERE uname=? AND upwd=?";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("ss", $un, $pw);
 	if(!$stmt->execute())
@@ -86,23 +81,16 @@
 	  ShowMsg("数据库错误：" . $stmt->error, "./index.php?action=login");
 	  return;
 	}
-    $res = $stmt->get_result();*/
-    $sql = sprintf("SELECT * FROM user WHERE uname='%s' AND upwd='%s'",
-                   $un, $conn->escape_string($pw));
-    $res = $conn->query($sql);
-    if(!$res)
+    $stmt->store_result();
+    if($stmt->num_rows == 0)
     {
-      ShowMsg("数据库错误：" . $conn->error, "./index.php?action=login");
-	  return;  
-    }
-	if($res->num_rows == 0)
-	{
 	  ShowMsg("用户不存在或密码错误！", "./index.php?action=login");
 	  return;
 	}
-	$row = $res->fetch_row();
-	
-	SetUserInfo($row[0], $un, $pw);
+    $stmt->bind_result($row_uid, $row_un, $row_pw, $row_mail);
+    $stmt->fetch();
+    
+	SetUserInfo($row_uid, $un, $pw);
 	ShowMsg("登录成功！", "./index.php");
   }
   
@@ -174,11 +162,6 @@
 	}
 	
 	$pw = $_GET["pw"];
-	if($pw == "")
-	{
-	  ShowMsg("请输入密码！", "./index.php?action=reg");
-	  return;
-	}
 	if(preg_match('/^[\x20-\x7e]{6,16}$/', $pw) == 0)
 	{
 	  ShowMsg("密码格式错误！", "./index.php?action=login");
@@ -187,11 +170,6 @@
 	$pw = md5($pw);
 	
 	$mail = $_GET["mail"];
-	if($mail == "")
-	{
-	  ShowMsg("请输入邮箱！", "./index.php?action=reg");
-	  return;
-	}
 	if(preg_match('/^[\w\-\.]+?@(\w+?\.)+?\w{2,4}$/', $mail) == 0)
 	{
 	  ShowMsg("邮箱格式错误！", "./index.php?action=reg");
@@ -277,14 +255,15 @@
 	  ShowMsg("数据库错误：" . $stmt->error, "./index.php?action=sign");
 	  return;
     }
-    $res = $stmt->get_result();
-    if($res->num_rows == 0)
+    $stmt->store_result();
+    if($stmt->num_rows == 0)
     {
 	  ShowMsg("被绑定用户不存在", "./index.php?action=sign");
 	  return;
     }
-	$row = $res->fetch_array();
-    $tar_usr = array('id' => $row[0], 'un' => $row[1], 'pw' => $row[2]);
+    $stmt->bind_result($row_uid, $row_un, $row_pw, $row_mail);
+    $stmt->fetch();
+    $tar_usr = array('id' => $row_uid, 'un' => $row_un, 'pw' => $row_pw);
 	
 	$sql = "SELECT * FROM bind WHERE (uid1=? AND uid2=?) OR (uid1=? AND uid2=?)";
 	$stmt = $conn->prepare($sql);
@@ -294,8 +273,8 @@
 	  ShowMsg("数据库错误：" . $conn->error, "./index.php?action=sign");
 	  return;
 	}
-	$res = $stmt->get_result();
-	if($res->num_rows == 0)
+	$stmt->store_result();
+	if($stmt->num_rows == 0)
 	{
 	  ShowMsg("未绑定该用户", "./index.php?action=sign");
 	  return;

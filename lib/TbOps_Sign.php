@@ -6,13 +6,15 @@ require_once "./lib/WizardHTTP.php";
 function GetTbs($wc)
 {
   $retstr = $wc->HTTPGet("http://tieba.baidu.com/dc/common/tbs");
-  return json_decode($retstr, true)['tbs'];
+  $json = json_decode($retstr, true);
+  return $json['tbs'];
 }
 
 function TestLogin($wc)
 {
   $retstr = $wc->HTTPGet("http://tieba.baidu.com/dc/common/tbs");
-  return json_decode($retstr, true)['is_login'] == 1;
+  $json = json_decode($retstr, true);
+  return $json['is_login'] == 1;
 }
 
 function GetFid($wc, $kw)

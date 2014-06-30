@@ -1,5 +1,5 @@
 <?php 
-error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
+//error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
 date_default_timezone_set('PRC');
 
 require_once "./lib/common.php";
@@ -67,14 +67,17 @@ function do_getid($usr)
     echo exec_error($stmt);
 	return;
   }
-  $res = $stmt->get_result();
-  $row = $res->fetch_row();
-  
-  if(!$row)
-    echo json_encode(array('errno' => 0, 'exist' => 0));
-  else
-    echo json_encode(array('errno' => 0, 'exist' => 1,
-	                       'un' => $row[1], 'cookie' => $row[2]));
+  $stmt->store_result();
+  if($stmt->num_rows == 0)
+  {
+      echo json_encode(array('errno' => 0, 'exist' => 0));
+      return;
+  }
+  $stmt->bind_result($row_uid, $row_un, $row_cookie);
+  $stmt->fetch();
+    
+  echo json_encode(array('errno' => 0, 'exist' => 1,
+	                     'un' => $row_un, 'cookie' => $row_cookie));
 }
 
 function do_setid($usr)
@@ -201,6 +204,7 @@ function do_refreshlist($usr)
 	return;
   }
   
+  
   $sql = "SELECT * FROM tbid WHERE uid=?";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("i", $usr['id']);
@@ -209,14 +213,15 @@ function do_refreshlist($usr)
     echo exec_error($stmt);
 	return;
   }
-  $res = $stmt->get_result();
-  $row = $res->fetch_row();
-  if(!$row)
+  $stmt->store_result();
+  if($stmt->num_rows == 0)
   {
-    echo app_error(3, 'Cookie未设置');
-    return;
+      echo app_error(3, 'Cookie未设置');
+      return;
   }
-  $cookie = $row[2];
+  $stmt->bind_result($row_uid, $row_un, $row_cookie);
+  $stmt->fetch();
+  $cookie = $row_cookie;
   
   $sql = "SELECT tbname FROM tblist WHERE uid=?";
   $stmt = $conn->prepare($sql);
@@ -226,13 +231,11 @@ function do_refreshlist($usr)
     echo exec_error($stmt);
 	return;
   }
-  $res = $stmt->get_result();
+  $stmt->bind_result($row_tbname);
   $old_list = array();
-  while($row = $res->fetch_row())
-    $old_list[] = $row[0];
+  while($stmt->fetch())
+    $old_list[] = $row_tbname;
   
-  require_once './lib/TBOps_Sign.php';
-  require_once './lib/WizardHTTP.php';
   $wc = new WizardHTTP();
   $wc->SetDefHdr();
   $wc->SetHdr('Cookie', $cookie);
@@ -283,10 +286,10 @@ function do_refreshlist($usr)
     echo exec_error($stmt);
 	return;
   }
-  $res = $stmt->get_result();
+  $stmt->bind_result($row_tbname, $row_ign);
   $list = array();
-  while($row = $res->fetch_row())
-    $list[] = $row;
+  while($stmt->fetch())
+    $list[] = array($row_tbname, $row_ign);
   
   echo json_encode(array('errno' => 0, 'list' => $list,
                          'add' => count($to_add),
@@ -311,10 +314,10 @@ function do_getlist($usr)
     echo exec_error($stmt);
 	return;
   }
-  $res = $stmt->get_result();
+  $stmt->bind_result($row_tbname, $row_ign);
   $list = array();
-  while($row = $res->fetch_row())
-    $list[] = $row;
+  while($stmt->fetch())
+    $list[] = array($row_tbname, $row_ign);
 
   echo json_encode(array('errno' => 0, 'list' => $list));
 }
@@ -385,10 +388,10 @@ function do_getlog($usr)
     echo exec_error($stmt);
 	return;
   }
-  $res = $stmt->get_result();
+  $stmt->bind_result($row_tbname, $row_status);
   $list = array();
-  while($arr = $res->fetch_row())
-    $list[] = $arr;
+  while($stmt->fetch())
+    $list[] = array($row_tbname, $row_status);
 
   echo json_encode(array('errno' => 0, 'list' => $list));
 }
@@ -421,19 +424,25 @@ function do_chpw($usr)
   $oldpw = $_GET['oldpw'];
   $newpw = $_GET['newpw'];
   $newpw2 = $_GET['newpw2'];
-  if(preg_match('/^[\x20-\x7e]{6,14}$/', $oldpw) == 0)
+  $re = '/^[\x20-\x7e]{6,16}$/';
+  if(preg_match($re, $oldpw) == 0)
   {
     echo app_error(7, "原密码格式有误");
 	return;
   }
-  if(preg_match('/^[\x20-\x7e]{6,14}$/', $newpw) == 0)
+  if(preg_match($re, $newpw) == 0)
   {
     echo app_error(7, "新密码格式有误");
 	return;
   }
+  if($oldpw == $newpw)
+  {
+    echo app_error(11, "原密码和新密码不能一致");
+	return;
+  }
   if($newpw2 != $newpw)
   {
-    echo app_error(11, "两次数据的密码不一致");
+    echo app_error(11, "两次输入的新密码不一致");
 	return;
   }
   $oldpw = md5($oldpw);
@@ -484,15 +493,14 @@ function do_getbind($usr)
     echo exec_error($stmt);
 	return;
   }
-  
-  $res = $stmt->get_result();
+  $stmt->bind_result($row_un1, $row_un2);
   $list = array();
-  while($arr = $res->fetch_row())
+  while($stmt->fetch())
   {
-    if($arr[0] != $usr['un'])
-	  $list[] = $arr[0];
-	else if($arr[1] != $usr['un'])
-	  $list[] = $arr[1];
+    if($row_un1 != $usr['un'])
+	  $list[] = $row_un1;
+	else if($row_un2 != $usr['un'])
+	  $list[] = $row_un2;
   }
   
   echo json_encode(array('errno' => 0, 'list' => $list));
@@ -501,9 +509,9 @@ function do_getbind($usr)
 function do_setbind($usr)
 {
   $bdname = $_GET['bdname'];
-  if($bdname == "")
+  if(preg_match('/^[\w\x{4e00}-\x{9fa5}]{1,14}$/u', $bdname) == 0)
   {
-    echo app_error(8, '需要填写目标账号');
+    echo app_error(8, '目标账号格式错误');
 	return;
   }
   if($bdname == $usr['un'])
@@ -528,14 +536,15 @@ function do_setbind($usr)
     echo exec_error($stmt);
 	return;
   }
-  $res = $stmt->get_result();
-  if($res->num_rows == 0)
+  $stmt->store_result();
+  if($stmt->num_rows == 0)
   {
     echo app_error(9, "被绑定用户不存在");
 	return;
   }
-  $row = $res->fetch_array();
-  $tar_uid = $row[0];
+  $stmt->bind_result($row_uid, $row_un, $row_pw, $row_mail);
+  $stmt->fetch();
+  $tar_uid = $row_uid;
   
   $sql = "INSERT INTO bind VALUES (?,?)";
   $stmt = $conn->prepare($sql);
@@ -552,9 +561,9 @@ function do_setbind($usr)
 function do_rmbind($usr)
 {
   $bdname = $_GET['bdname'];
-  if($bdname == "")
+  if(preg('/^[\w\x{4e00}-\x{9fa5}]{1,14}$/u', $bdname) == 0)
   {
-    echo app_error(8, '需要填写目标账号');
+    echo app_error(8, '目标账号格式错误');
 	return;
   }
   
@@ -574,14 +583,15 @@ function do_rmbind($usr)
     echo exec_error($stmt);
 	return;
   }
-  $res = $stmt->get_result();
-  if($res->num_rows == 0)
+  $stmt->store_result();
+  if($stmt->num_rows == 0)
   {
     echo app_error(9, "被绑定用户不存在");
 	return;
   }
-  $row = $res->fetch_array();
-  $tar_uid = $row[0];
+  $stmt->bind_result($row_uid, $row_un, $row_pw, $row_mail);
+  $stmt->fetch();
+  $tar_uid = $row_uid;
   
   $sql = "DELETE FROM bind WHERE (uid1=? AND uid2=?) OR (uid1=? AND uid2=?)";
   $stmt = $conn->prepare($sql);
@@ -634,9 +644,9 @@ function do_rmuser($usr)
   }
   
   $uid = $_GET['uid'];
-  if($uid == "")
+  if(preg_match('/^\d+$/', $uid) == 0)
   {
-    echo app_error(12, '请填写目标用户');
+    echo app_error(12, '目标用户格式错误');
     return;
   }
   if($uid == 1)

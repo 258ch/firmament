@@ -35,8 +35,8 @@
   else
   {
     $ls_exist = true;
-    $row = (int)$res->fetch_row();
-    $lastsign = $row[0];
+    $row = $res->fetch_row();
+    $lastsign = (int)$row[0];
   }
 
   $dt = (int)Date('Ymd');
