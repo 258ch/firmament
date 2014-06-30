@@ -286,14 +286,20 @@ $(function()
 
   var set_bind = function()
   {
-    var tobind = $("#bind-idtxt").val();
-	if(tobind == "")
+    var bdname = $("#bind-idtxt").val();
+	if(!(/[\w\u4e00-\u9fa5]{1,14}/.test(bdname)))
 	{
-	  alert('请填写要绑定的账号！');
+	  alert('用户名格式有误！');
 	  return;
 	}
-    $.get('./ajax.php?action=setbind&bdname=' + tobind,
-	      function(data)
+	var bdpw = $("#bind-pwtxt").val();
+	if(!(/[\x20-\x7e]{6,16}/.test(bdpw)))
+	{
+	  alert('密码格式有误！');
+	  return;
+	}
+    $.get('./ajax.php?action=setbind&bdname=' + bdname +
+	      "&bdpw=" + bdpw, function(data)
 	{
 	  var json = eval('(' + data + ')');
 	  if(json.errno != 0)
@@ -302,7 +308,7 @@ $(function()
 		return;
 	  }
 	  var tr = $("<tr></tr>");
-	  var td1 = $("<td>" + tobind + "</td>");
+	  var td1 = $("<td>" + bdname + "</td>");
 	  var td2 = $("<td></td>");
 	  var a1 = $("<a class=\"bind-chbtn\">切换</a>");
 	  var a2 = $("<a class=\"bind-rmbtn\">删除</a>");

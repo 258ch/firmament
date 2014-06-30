@@ -151,7 +151,10 @@
 		<div class="panel-body">
 		  <div class="row">
 		    <div class="col-md-4">
-		      <input type="text" class="form-control" id="bind-idtxt" />
+		      <input type="text" class="form-control" id="bind-idtxt" placeholder="用户名"/>
+			</div>
+			<div class="col-md-4">
+		      <input type="text" class="form-control" id="bind-pwtxt" placeholder="密码"/>
 			</div>
 		    <div class="col-md-2">
 		      <input type="button" class="btn btn-block btn-primary" id="bind-addbtn" value="添加绑定" />

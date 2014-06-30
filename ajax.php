@@ -520,6 +520,14 @@ function do_setbind($usr)
 	return;
   }
   
+  $bdpw = $_GET['bdpw'];
+  if(preg_match('/^[\x20-\x7e]{6,16}$/', $bdpw) == 0)
+  {
+    echo app_error(8, '目标密码格式错误');
+	return;
+  }
+  $bdpw = MD5($bdpw);
+  
   include "./config.php";
   $conn = new mysqli($db_server, $db_username, $db_password, $db_name, $db_port);
   if($conn->connect_errno != 0)
@@ -545,6 +553,11 @@ function do_setbind($usr)
   $stmt->bind_result($row_uid, $row_un, $row_pw, $row_mail);
   $stmt->fetch();
   $tar_uid = $row_uid;
+  if($row_pw != $bdpw)
+  {
+    echo app_error(8, '密码错误');
+	return;
+  }
   
   $sql = "INSERT INTO bind VALUES (?,?)";
   $stmt = $conn->prepare($sql);
