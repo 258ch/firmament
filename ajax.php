@@ -249,12 +249,23 @@ function do_refreshlist($usr)
   
   $to_add = array_diff($new_list, $old_list);
   $to_rm = array_diff($old_list, $new_list);
+  $dt = (int)Date('Ymd');
   
   if(count($to_add) != 0)
   {
     $sql = "INSERT INTO tblist VALUES";
     foreach($to_add as $tb)
       $sql .= sprintf(" ('%d','%s','F'),", $usr['id'], $tb);
+    $sql = substr($sql, 0, strlen($sql) - 1);
+    if(!$conn->query($sql))
+    {
+      echo exec_error($conn);
+	  return;
+    }
+      
+    $sql = "INSERT INTO signlog (uid, tbname, status, date) VALUES";
+    foreach($to_add as $tb)
+      $sql .= sprintf(" ('%d','%s','U','%d'),", $usr['id'], $tb, $dt);
     $sql = substr($sql, 0, strlen($sql) - 1);
     if(!$conn->query($sql))
     {
@@ -268,9 +279,18 @@ function do_refreshlist($usr)
     $tmp = "";
 	foreach($to_rm as $tb)
 	  $tmp .= "'" . $tb . "',";
-	$tmp = substr($tmp, 0, strlen($tmp - 1));
+	$tmp = substr($tmp, 0, strlen($tmp) - 1);
+    
     $sql = "DELETE FROM tblist WHERE uid=" . $usr['id'] .
 	       " AND tbname IN (" . $tmp . ")";
+    if(!$conn->query($sql))
+    {
+      echo exec_error($conn);
+	  return;
+    }
+      
+    $sql = "DELETE FROM signlog WHERE uid=" . $usr['id'] .
+           " AND tbname IN (" . $tmp . ") AND date=" . $dt;
     if(!$conn->query($sql))
     {
       echo exec_error($conn);
