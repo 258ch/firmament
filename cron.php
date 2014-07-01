@@ -80,7 +80,7 @@
     else
 	{
       $msg = sprintf("%s在%s吧签到失败：%s 错误代码：%s",
-	                 $srr[1], $arr[3], $r['errmsg'], $errno);
+	                 $arr[1], $arr[3], $r['errmsg'], $errno);
 	  if($errno == '160002') //你之前已经签过了
 	    $status = 'O';
 	  else if($errno == '340003') //服务器开小差了
