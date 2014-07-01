@@ -81,12 +81,19 @@
 	{
       $msg = sprintf("%s在%s吧签到失败：%s 错误代码：%s",
 	                 $arr[1], $arr[3], $r['errmsg'], $errno);
-	  if($errno == '160002') //你之前已经签过了
-	    $status = 'O';
-	  else if($errno == '340003') //服务器开小差了
-	    $status = 'R';
-	  else
-	    $status = 'F';
+	  switch($errno)
+	  {
+	    case '160002': //你之前已经签过了
+		  $status = 'O';
+		  break;
+		case '340003': //服务器开小差了
+		case '160003': //零点 稍后再试
+		case '160008': //太快了
+		  $status = 'R';
+		  break;
+		default:
+		  $status = 'F';
+	  }   
 	}
     debug_log($msg);
 	

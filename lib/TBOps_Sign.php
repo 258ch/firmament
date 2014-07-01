@@ -63,13 +63,12 @@ function GetTBList($wc)
   $json = json_decode($retstr, true);
   if($json['error_code'] != "0")
     return array('errno' => $json['error_code'], 'errmsg' => $json['error_msg']);
-  else
-  {
-    $list = array();
-    foreach($json['like_forum'] as $elem)
-      $list[] = $elem['forum_name'];
-    return array('errno' => 0, 'list' => $list); 
-  }
+  if($json['is_login'] != '1')
+    return array('errno' => 1, 'errmsg' => '用户未登录或已掉线');
+  $list = array();
+  foreach($json['like_forum'] as $elem)
+    $list[] = $elem['forum_name'];
+  return array('errno' => 0, 'list' => $list);
 }
 
 function GetUN($wc)
