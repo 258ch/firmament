@@ -376,6 +376,11 @@ function do_setign($usr)
     echo exec_error($stmt);
 	return;
   }
+  if($stmt->affected_rows == 0)
+  {
+    echo app_error(1, '签到列表中无该贴吧');
+	return;
+  }
   
   echo json_encode(array('errno' => 0));
 }
@@ -433,6 +438,11 @@ function do_resetlog($usr)
   if(!$stmt->execute())
   {
     echo exec_error($stmt);
+	return;
+  }
+  if($stmt->affected_rows == 0)
+  {
+    echo app_error(1, "无签到失败的贴吧");
 	return;
   }
   
@@ -804,8 +814,11 @@ function do_setregset($usr)
   
   $key = $_GET['key'];
   $allow = $_GET['allow'];
-  if($allow != "true")
-    $allow = "false";
+  if($allow != "true" && $allow != "false")
+  {
+    echo app_error(1, '参数allow格式错误');
+	return;
+  }
 	
   include "./config.php";
   $conn = new mysqli($db_server, $db_username, $db_password, $db_name, $db_port);
@@ -815,7 +828,7 @@ function do_setregset($usr)
 	return;
   }
   
-  $sql = "INSERT IGNORE INTO setting VALUES ('allowreg',?)";
+  $sql = "REPLACE INTO setting VALUES ('allowreg',?)";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("s", $allow);
   if(!$stmt->execute())
@@ -823,36 +836,14 @@ function do_setregset($usr)
     echo exec_error($stmt);
 	return;
   }
-  if($stmt->affected_rows == 0)
-  { 
-	$sql = "UPDATE setting SET v=? WHERE k='allowreg'";
-	$stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $allow);
-    if(!$stmt->execute())
-    {
-      echo exec_error($stmt);
-	  return;
-    }
-  }
   
-  $sql = "INSERT IGNORE INTO setting VALUES ('regkey',?)";
+  $sql = "REPLACE INTO setting VALUES ('regkey',?)";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("s", $key);
-   if(!$stmt->execute())
+  if(!$stmt->execute())
   {
     echo exec_error($stmt);
 	return;
-  }
-  if($stmt->affected_rows == 0)
-  {
-    $sql = "UPDATE setting SET v=? WHERE k='regkey'";
-	$stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $key);
-    if(!$stmt->execute())
-    {
-      echo exec_error($stmt);
-	  return;
-    }
   }
   
   echo json_encode(array('errno' => 0));

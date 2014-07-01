@@ -28,13 +28,9 @@
 	return;
   }
   if($res->num_rows == 0)
-  {
-    $ls_exist = false;
     $lastsign = 0;
-  }
   else
   {
-    $ls_exist = true;
     $row = $res->fetch_row();
     $lastsign = (int)$row[0];
   }
@@ -43,10 +39,8 @@
   if($dt != $lastsign)
   {
     if(!ResetSignlog()) return;
-    if(!$ls_exist)
-	  $sql = "INSERT INTO setting VALUES ('lastsign','$dt')";
-	else
-	  $sql = "UPDATE setting SET v='$dt' WHERE k='lastsign'";
+	
+	$sql = "REPLACE INTO setting VALUES ('lastsign','$dt')";
 	if(!$conn->query($sql))
 	{
 	  $errmsg = sprintf("重置上次签到失败：%s 错误代码：%d",
@@ -57,9 +51,9 @@
   }
 
   //获取待签列表
-  $sql = "SELECT uid, tbun, tbcookie, tbname 
-          FROM signlog NATURAL JOIN tbid 
-		  WHERE date=$dt AND (status='U' OR status='R') LIMIT 30";
+  $sql = "SELECT uid, tbun, tbcookie, tbname " .
+         "FROM signlog NATURAL JOIN tbid " .
+		 "WHERE date=$dt AND (status='U' OR status='R') LIMIT 30";
   $res = $conn->query($sql);
   if(!$res)
   {
@@ -122,9 +116,10 @@
     }
   
     $dt = (int)Date('Ymd');
-    $sql = "DELETE FROM signlog WHERE date=?";
+    $sql = "DELETE FROM signlog WHERE date<?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $dt);
+	$valid_dt = $dt - 5;
+    $stmt->bind_param("i", $valid_dt);
     if(!$stmt->execute())
     {
       $errmsg = sprintf("删除签到记录失败：%s 错误代码：%d",
@@ -152,7 +147,7 @@
       $list[] = $arr;
   
     //U: 待签到 O: 已签到 F: 失败 R: 等待重试
-    $sql = "INSERT INTO signlog (uid,tbname,status,date) VALUES";
+    $sql = "INSERT IGNORE INTO signlog (uid,tbname,status,date) VALUES";
     foreach($list as $elem)
       $sql .= sprintf(" (%d,'%s','U',%d),", $elem[0], $elem[1], $dt);
     $sql = substr($sql, 0, strlen($sql) - 1);

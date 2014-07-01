@@ -29,11 +29,9 @@
     do_chac($usr);
   else //index
   {
+    $param = array();
     if(defined("IS_LOGIN"))
-	{
-      $param = array();
 	  $param['un'] = $usr['un'];
-	}
     include "./page/index_page.php";
   }
   
@@ -183,12 +181,17 @@
 	  return;
 	}
 	
-	$sql = "INSERT INTO user (uname, upwd, umail) VALUES (?, ?, ?)";
+	$sql = "INSERT IGNORE INTO user (uname, upwd, umail) VALUES (?, ?, ?)";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("sss", $un, $pw, $mail);
 	if(!$stmt->execute())
 	{
-	  ShowMsg("用户已存在！", "./index.php?action=reg");
+	  ShowMsg("数据库错误：" . $stmt->error, "./index.php?action=reg");
+	  return;
+	}
+	if($stmt->affected_rows == 0)
+	{
+	  ShowMsg("用户名或邮箱已存在！", "./index.php?action=reg");
 	  return;
 	}
 	$uid = $stmt->insert_id;
