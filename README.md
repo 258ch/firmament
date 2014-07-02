@@ -1,5 +1,7 @@
 # 苍穹 - 贴吧签到助手
 
+![screenshot](http://ww2.sinaimg.cn/mw690/841aea59gw1ehu0z9tsubj20ka099wep.jpg "screenshot")
+
 ## 简介
 
 * 由百度非著名用户飞龙开发，开放给全部吧友进行使用。  

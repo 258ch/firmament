@@ -35,6 +35,7 @@
     $lastsign = (int)$row[0];
   }
 
+  //重置待签列表
   $dt = (int)Date('Ymd');
   if($dt != $lastsign)
   {
@@ -50,6 +51,16 @@
 	}
   }
 
+  //避免零点签到
+  $dtinfo = getdate();
+  if($dtinfo['hours'] == 0)
+  {
+    $errmsg = sprintf("当前时间为%02d:%02d，还剩%d分钟开始签到。",
+	                  0, $dtinfo['minutes'], 60 - $dtinfo['minutes']);
+    debug_log($errmsg);
+	return;			  
+  }
+  
   //获取待签列表
   $sql = "SELECT uid, tbun, tbcookie, tbname " .
          "FROM signlog NATURAL JOIN tbid " .
