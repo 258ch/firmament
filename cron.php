@@ -95,13 +95,18 @@
 	  switch($errno)
 	  {
 	    case '160002': //你之前已经签过了
+		case '340010':
+		case '3':
 		  $status = 'O';
 		  break;
 		case '340003': //服务器开小差了
+		case '340011': //太快了
 		case '160003': //零点 稍后再试
 		case '160008': //太快了
 		  $status = 'R';
 		  break;
+		//case '1': //未登录
+		//case '160004' //不支持
 		default:
 		  $status = 'F';
 	  }   
