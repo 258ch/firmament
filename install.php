@@ -40,11 +40,11 @@
 
 "CREATE TABLE signlog
 (
-  sid integer AUTO_INCREMENT PRIMARY KEY,
   uid integer,
   tbname varchar(128),
   status varchar(1),
   date integer,
+  PRIMARY KEY (uid, tbname, date),
   FOREIGN KEY (uid) REFERENCES user(uid)
 )",
 
