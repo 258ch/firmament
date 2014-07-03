@@ -307,7 +307,7 @@ $(function()
 	    alert(json.errmsg);
 		return;
 	  }
-	  var tr = $("<tr></tr>");
+	  var tr = $("<tr class=\"bind-row\"></tr>");
 	  var td1 = $("<td>" + bdname + "</td>");
 	  var td2 = $("<td></td>");
 	  var a1 = $("<a class=\"bind-chbtn\">切换</a>");
@@ -318,8 +318,8 @@ $(function()
 	  tr.append(td1);
 	  tr.append(td2);
 	  $("#bind-table").append(tr);
-	  $('.bind-chbtn').click(chbd_bind);
-	  $('.bind-rmbtn').click(rmbd_bind);
+	  $('.bind-chbtn').click(change_bind);
+	  $('.bind-rmbtn').click(remove_bind);
 	});
   };
   $("#bind-addbtn").click(set_bind);

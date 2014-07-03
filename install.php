@@ -7,7 +7,7 @@
     if($conn->connect_errno != 0)
     {
       $errmsg = "数据库连接错误：" . $conn->connect_error;
-	  echo $errmsg;
+	  ShowMsg($errmsg, '');
       debug_log($errmsg);
 	  return;
     }
@@ -69,12 +69,12 @@
 	  if(!$conn->query($sql))
       {
         $errmsg = "创建数据库表失败：" . $conn->error;
-	    echo $errmsg;
+		ShowMsg($errmsg, '');
         debug_log($errmsg);
 		return;
       }
 	}
 	$errmsg = "创建数据库表成功";
-	echo $errmsg;
+	ShowMsg($errmsg, './index.php');
     debug_log($errmsg);
 ?>

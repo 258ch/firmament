@@ -1,5 +1,5 @@
 <?php 
-//error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
+error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
 date_default_timezone_set('PRC');
 
 require_once "./lib/common.php";
@@ -664,7 +664,7 @@ function do_getuser($usr)
 	return;
   }
   
-  $sql = "SELECT uid, uname FROM user";
+  $sql = "SELECT uid, uname FROM user ORDER BY uid ASC";
   $res = $conn->query($sql);
   if(!$res)
   {

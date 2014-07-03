@@ -63,7 +63,9 @@ function ShowMsg($msg, $from)
   <body>
     <p>
 	  <?php echo $msg; ?>
+	  <?php if($from) { ?>
 	  <a href="<?php echo $from; ?>">返回</a>
+	  <?php } ?>
 	</p>
   </body>
 </html>
