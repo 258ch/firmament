@@ -160,9 +160,15 @@
 	}
 	
 	$pw = $_GET["pw"];
+	$pw2 = $_GET['pw2'];
 	if(preg_match('/^[\x20-\x7e]{6,16}$/', $pw) == 0)
 	{
-	  ShowMsg("密码格式错误！", "./index.php?action=login");
+	  ShowMsg("密码格式错误！", "./index.php?action=reg");
+	  return;
+	}
+	if($pw2 != $pw)
+	{
+	  ShowMsg("两次输入密码不一致！", "./index.php?action=reg");
 	  return;
 	}
 	$pw = md5($pw);

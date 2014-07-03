@@ -14,6 +14,10 @@
          placeholder="密码" required="required" pattern="[\x20-\x7e]{6,16}"
          title="密码应为6~16位。"/>
   <br />
+  <input type="password" id="pw2txt" name="pw2" class="form-control"
+         placeholder="重复输入密码" required="required" pattern="[\x20-\x7e]{6,16}"
+         title="密码应为6~16位。"/>
+  <br />
   <input type="email" id="mailtxt" name="mail" class="form-control"
          placeholder="邮箱" required="required" />
   <br />
