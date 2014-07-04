@@ -21,7 +21,7 @@
 
 1. 对于非SAE、BAE的用户，修改"config.php"中的数据库设置。SAE、BAE已设置好，无需更改。
 2. 修改"config.php"中的密钥，以保证安全。
-3. 运行"install.php"创建数据库表。如果已经安装之前版本的，请运行"update.php";
+3. 运行"install.php"创建数据库表。如果已经安装之前版本的，请运行"update.php"。
 4. 非云主机请在管理面板设置定时任务（cronjob）。不支持定时任务的主机请将"cron.php"添加到第三方网站监控。
 
 ## 反馈
