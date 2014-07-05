@@ -142,7 +142,7 @@
     $sql = "DELETE FROM signlog WHERE date<?";
     $stmt = $conn->prepare($sql);
 	$valid_dt = $dt - 5;
-    $stmt->bind_param("ii", $valid_dt, $dt);
+    $stmt->bind_param("i", $valid_dt);
     if(!$stmt->execute())
     {
       $errmsg = sprintf("删除签到记录失败：%s 错误代码：%d",
