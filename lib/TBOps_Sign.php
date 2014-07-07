@@ -68,23 +68,23 @@ function Sign($wc, $kw)
   switch($errno)
   {
     case '0': //成功
-	  return array('errno' => 0);
-	case '160002': //你之前已经签过了
+      return array('errno' => 0);
+    case '160002': //你之前已经签过了
     case '340010':
-	case '3':
+    case '3':
       return array('errno' => 3,
-	               'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
-	case '340003': //服务器开小差了
-	case '340011': //太快了
-	case '160003': //零点 稍后再试
-	case '160008': //太快了
-	  return array('errno' => 2,
-	               'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
-	//case '1': //未登录
-	//case '160004' //不支持
-	default:
-	  return array('errno' => 1,
-	               'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
+                   'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
+    case '340003': //服务器开小差了
+    case '340011': //太快了
+    case '160003': //零点 稍后再试
+    case '160008': //太快了
+      return array('errno' => 2,
+                   'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
+    //case '1': //未登录
+    //case '160004' //不支持
+    default:
+      return array('errno' => 1,
+                   'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
   }    
 }
 
