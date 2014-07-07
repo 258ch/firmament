@@ -83,33 +83,21 @@
     $wc->SetHdr("Cookie", $arr[2]);
     $r = Sign($wc, $arr[3]);
 	$errno = $r['errno'];
-    if($errno == '0')
+    if($errno == 0)
 	{
       $msg = sprintf("%s在%s吧签到成功", $arr[1], $arr[3]);
 	  $status = 'O';
 	}
     else
 	{
-      $msg = sprintf("%s在%s吧签到失败：%s 错误代码：%s",
+      $msg = sprintf("%s在%s吧签到失败：%s",
 	                 $arr[1], $arr[3], $r['errmsg'], $errno);
-	  switch($errno)
-	  {
-	    case '160002': //你之前已经签过了
-		case '340010':
-		case '3':
-		  $status = 'O';
-		  break;
-		case '340003': //服务器开小差了
-		case '340011': //太快了
-		case '160003': //零点 稍后再试
-		case '160008': //太快了
-		  $status = 'R';
-		  break;
-		//case '1': //未登录
-		//case '160004' //不支持
-		default:
-		  $status = 'F';
-	  }   
+	  if($errno == 3) //已签过
+	    $status = 'O';
+	  else if($errno == 2) //需要重试
+	    $status = 'R';
+	  else //签到失败
+	    $status = 'F'; 
 	}
     debug_log($msg);
 	

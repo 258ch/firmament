@@ -3,6 +3,10 @@
 
 require_once "./lib/WizardHTTP.php";
 
+/** 
+ * @param WizardHTTP $wc WizardHTTP对象 请确保已经设置好cookie
+ * @return string 成功时返回获取到的tbs 32位 失败时随意
+ */
 function GetTbs($wc)
 {
   $retstr = $wc->HTTPGet("http://tieba.baidu.com/dc/common/tbs");
@@ -10,6 +14,10 @@ function GetTbs($wc)
   return $json['tbs'];
 }
 
+/** 
+ * @param WizardHTTP $wc WizardHTTP对象 请确保已经设置好cookie
+ * @return bool 是否已登录 
+ */
 function TestLogin($wc)
 {
   $retstr = $wc->HTTPGet("http://tieba.baidu.com/dc/common/tbs");
@@ -17,6 +25,11 @@ function TestLogin($wc)
   return $json['is_login'] == 1;
 }
 
+/** 
+ * @param WizardHTTP $wc WizardHTTP对象 请确保已经设置好cookie
+ * @param string $kw 目标贴吧名称 utf-8编码
+ * @return string 成功时返回目标贴吧的fid 失败时返回空串
+ */
 function GetFid($wc, $kw)
 {
   $url = "http://tieba.baidu.com/f/commit/share/fnameShareApi?fname=" . 
@@ -27,6 +40,12 @@ function GetFid($wc, $kw)
   return (string)$json['data']['fid'];
 }
 
+/** 
+ * @param WizardHTTP $wc WizardHTTP对象 请确保已经设置好cookie
+ * @param string $kw 目标贴吧名称 utf-8编码
+ * @return array ['errno'] integer 签到的结果 0签到成功 1签到失败 2需要重试 3已签过
+ *               ['errmsg'] string 错误信息 仅在失败时出现
+ */
 function Sign($wc, $kw)
 {
   $kw_enco = urlencode($kw);
@@ -46,12 +65,35 @@ function Sign($wc, $kw)
 
   $json = json_decode($retstr, true);
   $errno = $json['error_code'];
-  if($errno == "0")
-    return array('errno' => 0);
-  else
-    return array('errno' => $errno, 'errmsg' => $json['error_msg']);
+  switch($errno)
+  {
+    case '0': //成功
+	  return array('errno' => 0);
+	case '160002': //你之前已经签过了
+    case '340010':
+	case '3':
+      return array('errno' => 3,
+	               'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
+	case '340003': //服务器开小差了
+	case '340011': //太快了
+	case '160003': //零点 稍后再试
+	case '160008': //太快了
+	  return array('errno' => 2,
+	               'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
+	//case '1': //未登录
+	//case '160004' //不支持
+	default:
+	  return array('errno' => 1,
+	               'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
+  }    
 }
 
+/** 
+ * @param WizardHTTP $wc WizardHTTP对象 请确保已经设置好cookie
+ * @return array ['errno'] integer 错误代码 0为成功 非零为失败
+ *               ['list'] array 包含贴吧列表的数组 每个贴吧为string utf-8编码 仅在成功时出现
+ *               ['errmsg'] string 错误信息 仅在失败时出现
+ */
 function GetTBList($wc)
 {
   $cookie = $wc->GetHdr("Cookie");
@@ -71,6 +113,10 @@ function GetTBList($wc)
   return array('errno' => 0, 'list' => $list);
 }
 
+/** 
+ * @param WizardHTTP $wc WizardHTTP对象 请确保已经设置好cookie
+ * @return string 成功时获取到的用户名称 失败时返回空串
+ */
 function GetUN($wc)
 {
   $retstr = $wc->HTTPGet('http://tieba.baidu.com/i/sys/user_json');
