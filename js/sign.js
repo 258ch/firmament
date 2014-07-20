@@ -14,6 +14,7 @@ $(function()
 	  if(json.exist == 1)
 	  {
 	    $('#tbid-un').text(json.un);
+		$('#tbid-cotxt').val(json.cookie);
 	    $('#tbid-log').removeClass('hidden');
 		$('#tbid-unlog').addClass('hidden');
 	  }
@@ -28,7 +29,7 @@ $(function()
   
   var set_id = function()
   {
-    var cookie = $("#tbid-setidtxt").val();
+    var cookie = $("#tbid-cotxt").val();
 	if(!cookie.match(/^BDUSS=.{192}$/))
 	{
 	  alert("Cookie格式错误！");
@@ -49,7 +50,7 @@ $(function()
 	  }
 	});
   };
-  $("#tbid-setidbtn").click(set_id);
+  $("#tbid-setbtn").click(set_id);
   
   var rm_id = function()
   {
@@ -67,7 +68,7 @@ $(function()
 	  }
 	});
   };
-  $("#tbid-unlogbtn").click(rm_id);
+  $("#tbid-exitbtn").click(rm_id);
 
 
   //tbli part

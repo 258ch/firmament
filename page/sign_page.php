@@ -26,10 +26,10 @@
 	      <p>您还没有设置贴吧的Cookie，请设置。格式为“BDUSS=”以及后面的192个字母。</p>
 		  <div class="row">
 		    <div class="col-md-5">
-	          <input type="text" id="tbid-setidtxt" class="form-control" />
+	          <input type="text" id="tbid-cotxt" class="form-control" />
 			</div>
 			<div class="col-md-2">
-		      <input type="button" value="设置" id="tbid-setidbtn" class="btn btn-primary btn-block" />
+		      <input type="button" value="设置" id="tbid-setbtn" class="btn btn-primary btn-block" />
 			</div>
 	      </div>
 	    </div>
@@ -43,7 +43,7 @@
 		      <p>用户名：<span id="tbid-un"></span></p>
 			</div>
 			<div class="col-md-1">
-		      <input type="button" value="退出" id="tbid-unlogbtn" class="btn btn-primary btn-block" />
+		      <input type="button" value="退出" id="tbid-exitbtn" class="btn btn-primary btn-block" />
 			</div>
 		  </div>
 		</div>
