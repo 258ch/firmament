@@ -120,6 +120,7 @@ function GetTBList($wc)
 function GetUN($wc)
 {
   $retstr = $wc->HTTPGet('http://tieba.baidu.com/i/sys/user_json');
+  $retstr = iconv('gbk', 'utf-8', $retstr);
   $json = json_decode($retstr, true);
   return $json['raw_name'];
 }

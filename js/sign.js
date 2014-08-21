@@ -351,7 +351,7 @@ $(function()
   
   $("#slog-item").click(function()
   {
-    if($("#silog-item").hasClass("active"))
+    if($("#slog-item").hasClass("active"))
 	  return;
 	$(".list-group-item").removeClass("active");
 	$("#slog-item").addClass("active");
