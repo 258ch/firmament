@@ -98,18 +98,20 @@ function GetTBList($wc)
 {
   $cookie = $wc->GetHdr("Cookie");
   $poststr = $cookie . "&_client_id=&_client_type=2&_client_version=5.7.0" .
-             "&_phone_imei=000000000000000&from=tieba&like_forum=1&recommend=0&topic=0";
+             "&_phone_imei=000000000000000&from=tieba";
   $sign = MD5(str_replace("&", "", $poststr) . "tiebaclient!!!");
   $poststr .= "&sign=" . strtoupper($sign);
-  $retstr = $wc->HTTPPost("http://c.tieba.baidu.com/c/f/forum/forumrecommend", $poststr);
+  $retstr = $wc->HTTPPost("http://c.tieba.baidu.com/c/f/forum/like", $poststr);
   $json = json_decode($retstr, true);
   if($json['error_code'] != "0")
     return array('errno' => $json['error_code'], 'errmsg' => $json['error_msg']);
-  if($json['is_login'] != '1')
+  if(!$json['forum_list'])
     return array('errno' => 1, 'errmsg' => '用户未登录或已掉线');
   $list = array();
-  foreach($json['like_forum'] as $elem)
-    $list[] = $elem['forum_name'];
+  foreach($json['forum_list']['non-gconforum'] as $elem)
+    $list[] = $elem['name'];
+  foreach($json['forum_list']['gconforum'] as $elem)
+    $list[] = $elem['name'];
   return array('errno' => 0, 'list' => $list);
 }
 
