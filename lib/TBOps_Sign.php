@@ -74,16 +74,16 @@ function Sign($wc, $kw)
     case '3':
       return array('errno' => 3,
                    'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
-    case '340003': //服务器开小差了
-    case '340011': //太快了
-    case '160003': //零点 稍后再试
-    case '160008': //太快了
-      return array('errno' => 2,
-                   'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
-    //case '1': //未登录
-    //case '160004' //不支持
-    default:
+    case '1': //未登录
+    case '160004' //不支持
       return array('errno' => 1,
+                   'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
+    //case '340003': //服务器开小差了
+    //case '340011': //太快了
+    //case '160003': //零点 稍后再试
+    //case '160008': //太快了
+    default:
+      return array('errno' => 2,
                    'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
   }    
 }
