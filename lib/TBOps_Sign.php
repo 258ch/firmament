@@ -75,7 +75,7 @@ function Sign($wc, $kw)
       return array('errno' => 3,
                    'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
     case '1': //未登录
-    case '160004' //不支持
+    case '160004': //不支持
       return array('errno' => 1,
                    'errmsg' => $json['error_msg'] . " 错误代码：" . $errno);
     //case '340003': //服务器开小差了
